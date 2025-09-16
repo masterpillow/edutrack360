@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  role      Role     @default(STUDENT)
+  createdAt DateTime @default(now())
+  enrollments Enrollment[]
+  progress  Progress[]
+}
+
+model Course {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  title     String
+  sessions  Session[]
+  modules   Module[]
+  enrollments Enrollment[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  courseId  String
+  startsAt  DateTime
+  endsAt    DateTime
+  Attendance Attendance[]
+  course    Course   @relation(fields: [courseId], references: [id])
+}
+
+model Enrollment {
+  id       String @id @default(cuid())
+  userId   String
+  courseId String
+  user     User   @relation(fields: [userId], references: [id])
+  course   Course @relation(fields: [courseId], references: [id])
+}
+
+model Attendance {
+  id        String   @id @default(cuid())
+  userId    String
+  sessionId String
+  status    AttendanceStatus @default(PRESENT)
+  timestamp DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  session   Session  @relation(fields: [sessionId], references: [id])
+}
+
+model Module {
+  id        String   @id @default(cuid())
+  courseId  String
+  title     String
+  type      ModuleType
+  course    Course   @relation(fields: [courseId], references: [id])
+  Progress  Progress[]
+}
+
+model Progress {
+  id        String   @id @default(cuid())
+  userId    String
+  moduleId  String
+  score     Int      @default(0)
+  badges    Badge[]
+  user      User     @relation(fields: [userId], references: [id])
+  module    Module   @relation(fields: [moduleId], references: [id])
+}
+
+model Badge {
+  id         String  @id @default(cuid())
+  name       String
+  progressId String
+  progress   Progress @relation(fields: [progressId], references: [id])
+}
+
+enum Role { STUDENT INSTRUCTOR ADMIN }
+enum AttendanceStatus { PRESENT ABSENT LATE }
+enum ModuleType { VIDEO AUDIO VR GAME QUIZ }
