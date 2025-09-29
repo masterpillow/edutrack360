@@ -7,7 +7,7 @@
     "node": ">=20 <21"
   },
   "scripts": {
-    "dev": "nodemon --watch src --exec ts-node src/index.ts",
+    "dev": "concurrently -k -n SERVER,WEB -c green,blue \"npm run dev:server\" \"npm run dev:web\"",
     "dev:web": "vite",
     "build:web": "vite build",
     "preview:web": "vite preview",
@@ -16,7 +16,9 @@
     "prisma:push": "prisma db push",
     "prisma:studio": "prisma studio",
     "prisma:gen": "prisma generate",
-    "seed": "ts-node src/seed.ts"
+    "seed": "ts-node src/seed.ts",
+    "dev:server": "nodemon --watch src --ext ts,json --exec \"node -r ts-node/register src/index.ts\"",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^5.13.0",
@@ -33,6 +35,7 @@
     "@types/react": "^19.1.15",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.4",
+    "concurrently": "^9.2.1",
     "nodemon": "^3.1.10",
     "prisma": "^5.13.0",
     "ts-node": "^10.9.2",
@@ -43,8 +46,9 @@
     "watch": [
       "src"
     ],
+    "ext": "ts,json",
     "execMap": {
-      "ts": "ts-node"
+      "ts": "node -r ts-node/register"
     },
     "signal": "SIGINT",
     "ignore": [
