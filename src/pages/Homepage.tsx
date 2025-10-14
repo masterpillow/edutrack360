@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "../styles/landing.css";
 
 export default function Homepage() {
@@ -7,7 +8,7 @@ export default function Homepage() {
       <nav className="lp-nav" aria-label="Primary">
         <div className="brand">EduTrack360</div>
         <div className="links">
-          <a href="#features">Features</a>
+          <a href="https://framevr.io/csc-400-kt" target="_blank" rel="noopener noreferrer">Features</a>
           <a href="#api">API</a>
           <a className="btn small ghost" href="#get-started">Get Started</a>
         </div>
@@ -18,12 +19,11 @@ export default function Homepage() {
           <p className="kicker">Personalized Learning</p>
           <h1>Learn Your Learning Style</h1>
           <p className="sub">
-            Track your progress, explore VR-ready modules, and discover
-            the learning approach that works best for you.
+            Track your progress, explore VR-ready modules, and discover the learning approach that works best for you.
           </p>
           <div className="cta">
-            <a className="btn primary" href="#get-started">Get Started</a>
-            <a className="btn ghost" href="#features">View Courses</a>
+            <Link className="btn primary" to="/courses">View Courses</Link>
+            <a className="btn ghost" href="#get-started">Get Started</a>
           </div>
         </div>
       </main>

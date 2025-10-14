@@ -26,6 +26,7 @@
     "express": "^4.21.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-router-dom": "^7.9.3",
     "zod": "^3.23.8"
   },
   "devDependencies": {
