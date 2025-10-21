@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../lib/api";
 
-type Course = { id: string; code: string; title: string };
+type Course = { id: string; code: string; title: string; url: string };
 
 export default function Courses() {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -10,10 +10,17 @@ export default function Courses() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    api.get("/courses")
-      .then(res => setCourses(res.data))
-      .catch(err => { console.error(err); setError("Could not load courses"); })
-      .finally(() => setLoading(false));
+    (async () => {
+      try {
+        const { data } = await api.get<Course[]>("/api/courses");
+        setCourses(data);
+      } catch (e) {
+        console.error(e);
+        setError("Could not load courses");
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
   return (
@@ -41,8 +48,17 @@ export default function Courses() {
               border: "1px solid rgba(255,255,255,.15)",
               borderRadius: 12, background: "rgba(0,0,0,.25)", padding: "14px 16px"
             }}>
-              <div style={{ fontWeight: 800 }}>{c.code}</div>
-              <div style={{ opacity: .9 }}>{c.title}</div>
+              <a
+                href={c.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ textDecoration: "none", color: "inherit", display: "block" }}
+                title="Open in FrameVR"
+              >
+                <div style={{ fontWeight: 800 }}>{c.code}</div>
+                <div style={{ opacity: .9, marginBottom: 8 }}>{c.title}</div>
+                <div className="btn small">Open in VR</div>
+              </a>
             </li>
           ))}
         </ul>
