@@ -1,35 +1,74 @@
+// src/pages/Homepage.tsx
 import React from "react";
-import { Link } from "react-router-dom";
 import "../styles/landing.css";
+import { Link, useNavigate } from "react-router-dom";
+import { isAuthed, isAdmin, logout } from "../auth";
 
 export default function Homepage() {
+  const nav = useNavigate();
+  const authed = isAuthed();
+
+  // Only protect certain routes
+  function guardProtected(path: string) {
+    if (!authed) return nav("/login");
+    nav(path);
+  }
+
   return (
     <div className="lp">
       <nav className="lp-nav" aria-label="Primary">
         <div className="brand">EduTrack360</div>
         <div className="links">
-          <a href="https://framevr.io/csc-400-kt" target="_blank" rel="noopener noreferrer">Features</a>
+          <Link to="/features">Features</Link>
           <a href="#api">API</a>
-          <a className="btn small ghost" href="#get-started">Get Started</a>
+
+          {isAdmin() && (
+            <Link className="btn small ghost" to="/admin">
+              Admin Panel
+            </Link>
+          )}
+
+          {!authed ? (
+            <>
+              <Link className="btn small ghost" to="/login">Login</Link>
+              <Link className="btn small primary" to="/register">Register</Link>
+            </>
+          ) : (
+            <button
+              className="btn small ghost"
+              onClick={() => { logout(); nav("/"); }}
+            >
+              Logout
+            </button>
+          )}
         </div>
       </nav>
 
-      <main className="lp-hero">
-        <div className="lp-overlay" role="region" aria-label="Hero">
+      <main className="lp-hero" role="region" aria-label="Hero">
+        <div className="lp-overlay">
           <p className="kicker">Personalized Learning</p>
           <h1>Learn Your Learning Style</h1>
           <p className="sub">
-            Track your progress, explore VR-ready modules, and discover the learning approach that works best for you.
+            Track your progress, explore VR-ready modules, and discover the learning
+            approach that works best for you.
           </p>
+
           <div className="cta">
-            <Link className="btn primary" to="/courses">View Courses</Link>
-            <a className="btn ghost" href="#get-started">Get Started</a>
+            {/* View Courses requires auth */}
+            <button className="btn primary" onClick={() => guardProtected("/courses")}>
+              View Courses
+            </button>
+
+            {/* Get Started goes to VARK without login */}
+            <Link className="btn ghost" to="/vark">
+              Get Started
+            </Link>
           </div>
         </div>
       </main>
 
       <footer className="lp-foot">
-        © 2025 EduTrack360 • Built with React + Node + Prisma
+        © 2025 EduTrack360 • Backend: Node/Express/TypeScript
       </footer>
     </div>
   );
